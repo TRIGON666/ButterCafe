@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}ButterCafe - Меню{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center mb-4">Наше меню</h1>
+            
+            <form class="row g-3 mb-4" method="get">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="search" placeholder="Поиск блюд..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" name="category">
+                        <option value="">Все категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Поиск</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card product-card">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top product-image">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0">{{ product.price }} ₽</span>
+                        <a href="{% url 'cafe:add_to_cart' product.id %}" class="btn btn-primary">В корзину</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="lead">Товары не найдены</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 
