@@ -47,3 +47,183 @@ window.addEventListener('DOMContentLoaded', function() {
 // - плавный скролл к якорям
 // - обработка форм (AJAX)
 // - динамическое обновление корзины 
+
+// --- Добавление товара в корзину через AJAX ---
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var productId = this.getAttribute('data-id');
+            fetch('/cart/add/' + productId + '/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCartCount(data.cart_items_count);
+                    showToast('Товар добавлен в корзину!');
+                }
+            });
+        });
+    });
+});
+
+function updateCartCount(count) {
+    var cartCount = document.querySelector('.cart-count');
+    if (!cartCount) {
+        var cartEllipse = document.querySelector('.cart-ellipse');
+        if (cartEllipse) {
+            cartCount = document.createElement('span');
+            cartCount.className = 'cart-count';
+            cartEllipse.appendChild(cartCount);
+        }
+    }
+    if (cartCount) {
+        cartCount.textContent = count;
+        cartCount.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+function showToast(msg) {
+    var toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() {
+        toast.classList.add('show');
+    }, 10);
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 300);
+    }, 1800);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// --- Модальное окно карточки товара ---
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.addEventListener('click', function(e) {
+        var link = e.target.closest('.product-link');
+        if (link && link.dataset.id) {
+            e.preventDefault();
+            openProductModal(link.dataset.id);
+        }
+        if (e.target.classList.contains('modal-product-overlay') || e.target.id === 'modalProductClose') {
+            closeProductModal();
+        }
+    });
+});
+
+function openProductModal(productId) {
+    fetch('/product/' + productId + '/modal/')
+        .then(r => r.json())
+        .then(data => {
+            var modal = document.getElementById('modalProduct');
+            var content = document.getElementById('modalProductContent');
+            content.innerHTML = data.html;
+            modal.style.display = 'flex';
+            setTimeout(function() { modal.classList.add('active'); }, 10);
+            // Повторно инициализируем кнопку "В корзину" внутри модалки
+            content.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var productId = this.getAttribute('data-id');
+                    fetch('/cart/add/' + productId + '/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateCartCount(data.cart_items_count);
+                            showToast('Товар добавлен в корзину!');
+                        }
+                    });
+                });
+            });
+        });
+}
+
+function closeProductModal() {
+    var modal = document.getElementById('modalProduct');
+    modal.classList.remove('active');
+    setTimeout(function() { modal.style.display = 'none'; }, 200);
+}
+
+// --- Модальное окно оформления заказа ---
+document.addEventListener('DOMContentLoaded', function() {
+    var orderBtn = document.getElementById('openOrderModal');
+    if (orderBtn) {
+        orderBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/order/modal/')
+                .then(r => r.json())
+                .then(data => {
+                    var modal = document.getElementById('modalOrder');
+                    var content = document.getElementById('modalOrderContent');
+                    content.innerHTML = data.html;
+                    modal.style.display = 'flex';
+                    setTimeout(function() { modal.classList.add('active'); }, 10);
+                    // Кнопка закрытия
+                    var closeBtn = document.getElementById('modalOrderClose');
+                    if (closeBtn) {
+                        closeBtn.onclick = closeOrderModal;
+                    }
+                    // Клик по overlay
+                    document.querySelector('.modal-order-overlay').onclick = closeOrderModal;
+                    // Отправка формы заказа
+                    var form = document.getElementById('orderForm');
+                    if (form) {
+                        form.onsubmit = function(ev) {
+                            ev.preventDefault();
+                            var formData = new FormData(form);
+                            fetch('/order/create/', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': getCookie('csrftoken'),
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                                body: formData
+                            })
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.success) {
+                                    closeOrderModal();
+                                    showToast('Заказ успешно оформлен!');
+                                    setTimeout(function(){ window.location.reload(); }, 1200);
+                                } else if (data.errors) {
+                                    alert('Ошибка: ' + data.errors.join('\n'));
+                                }
+                            });
+                        }
+                    }
+                });
+        });
+    }
+});
+
+function closeOrderModal() {
+    var modal = document.getElementById('modalOrder');
+    modal.classList.remove('active');
+    setTimeout(function() { modal.style.display = 'none'; }, 200);
+} 

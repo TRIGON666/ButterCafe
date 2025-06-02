@@ -3,7 +3,7 @@
 {% block title %}ButterCafe - Корзина{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container cart">
     <h1 class="text-center mb-4">Корзина</h1>
 
     {% if cart_items %}
@@ -47,7 +47,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Итого</h5>
                     <p class="h3 mb-4">{{ total_price }} ₽</p>
-                    <button class="btn btn-primary w-100" disabled>Оформить заказ</button>
+                    <button class="btn btn-primary w-100" id="openOrderModal">Оформить заказ</button>
                 </div>
             </div>
         </div>

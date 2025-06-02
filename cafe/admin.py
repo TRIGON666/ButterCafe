@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Cart, CartItem
+from .models import Category, Product, Cart, CartItem, Order
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -9,7 +9,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'available', 'created', 'updated')
+    list_display = ('name', 'category', 'price', 'available', 'calories', 'proteins', 'fats', 'carbs', 'created', 'updated')
     list_filter = ('available', 'created', 'updated', 'category')
     list_editable = ('price', 'available')
     prepopulated_fields = {'slug': ('name',)}
@@ -25,3 +25,21 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ('session_key', 'created', 'updated')
     inlines = [CartItemInline]
     readonly_fields = ('created', 'updated')
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'phone', 'delivery_type', 'total', 'created', 'receipt_text')
+    list_filter = ('delivery_type', 'created')
+    search_fields = ('name', 'phone', 'email', 'address')
+    readonly_fields = ('created', 'total', 'delivery_price', 'items_price', 'receipt_text')
+    fieldsets = (
+        ('Информация о заказе', {
+            'fields': ('name', 'phone', 'email', 'delivery_type', 'address', 'created', 'total', 'delivery_price', 'items_price')
+        }),
+        ('Детали заказа', {
+            'fields': ('need_cutlery', 'need_call', 'comment', 'time')
+        }),
+        ('Чек', {
+            'fields': ('receipt_text',)
+        })
+    )

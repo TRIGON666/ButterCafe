@@ -29,9 +29,14 @@
                         <div>+7 (913)-353-22-22</div>
                     </div>
                     <div class="header-cart">
-                        <div class="cart-ellipse">
-                            <img src="{% static 'images/cart.svg' %}" alt="Корзина">
-                        </div>
+                        <a href="{% url 'cafe:cart' %}" class="cart-link">
+                            <div class="cart-ellipse position-relative">
+                                <img src="{% static 'images/cart.svg' %}" alt="Корзина">
+                                {% if cart_items_count > 0 %}
+                                <span class="cart-count">{{ cart_items_count }}</span>
+                                {% endif %}
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div class="menu-top-line"></div>
@@ -41,8 +46,8 @@
                 <nav class="main-nav">
                     <a href="{% url 'cafe:home' %}" class="{% if request.path == '/' %}active{% endif %}">ГЛАВНАЯ</a>
                     <a href="{% url 'cafe:menu' %}" class="{% if request.path == '/menu/' %}active{% endif %}">МЕНЮ</a>
+                    <a href="{% url 'cafe:about' %}" class="{% if request.path == '/about/' %}active{% endif %}">О НАС</a>
                     <a href="#" class="{% if request.path == '/addresses/' %}active{% endif %}">АДРЕСА</a>
-                    <a href="#" class="{% if request.path == '/about/' %}active{% endif %}">О НАС</a>
                 </nav>
             </header>
             {% block content %}{% endblock %}
@@ -78,6 +83,17 @@
                     <a href="mailto:butterbakery@mail.ru"><img src="{% static 'images/email.svg' %}" alt="Email"></a>
                 </div>
             </footer>
+        </div>
+    </div>
+    <div id="modalProduct" class="modal-product" style="display:none;">
+        <div class="modal-product-overlay"></div>
+        <div class="modal-product-content" id="modalProductContent">
+        </div>
+    </div>
+    <div id="modalOrder" class="modal-order" style="display:none;">
+        <div class="modal-order-overlay"></div>
+        <div class="modal-order-content" id="modalOrderContent">
+            <!-- Сюда будет подгружаться форма оформления заказа -->
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

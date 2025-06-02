@@ -1,51 +1,41 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}ButterCafe - Меню{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="text-center mb-4">Наше меню</h1>
-            
-            <form class="row g-3 mb-4" method="get">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" name="search" placeholder="Поиск блюд..." value="{{ request.GET.search }}">
-                </div>
-                <div class="col-md-4">
-                    <select class="form-select" name="category">
-                        <option value="">Все категории</option>
-                        {% for category in categories %}
-                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Поиск</button>
-                </div>
-            </form>
-        </div>
+<div class="container-main">
+    <h1 class="text-center mb-4">Меню</h1>
+    <div class="menu-categories mb-3">
+        <a href="?" class="menu-category-link{% if not request.GET.category %} active{% endif %}">Все</a>
+        {% for category in categories %}
+        <a href="?category={{ category.id }}" class="menu-category-link{% if request.GET.category == category.id|stringformat:'i' %} active{% endif %}">{{ category.name }}</a>
+        {% endfor %}
     </div>
-
-    <div class="row">
+    <form class="menu-search mb-4" method="get" autocomplete="off">
+        {% if request.GET.category %}
+        <input type="hidden" name="category" value="{{ request.GET.category }}">
+        {% endif %}
+        <div class="search-box">
+            <input type="text" class="search-input" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search }}">
+            <button type="submit" class="search-btn"><img src="{% static 'images/search.svg' %}" alt="Поиск"></button>
+        </div>
+    </form>
+    <div class="products-grid">
         {% for product in products %}
-        <div class="col-md-4 mb-4">
-            <div class="card product-card">
-                {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top product-image">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text">{{ product.description }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="h5 mb-0">{{ product.price }} ₽</span>
-                        <a href="{% url 'cafe:add_to_cart' product.id %}" class="btn btn-primary">В корзину</a>
-                    </div>
+        <a href="#" class="product-card product-link" data-id="{{ product.id }}">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+            {% endif %}
+            <div class="product-info">
+                <div class="product-title">{{ product.name }}</div>
+                <div class="product-desc">{{ product.description }}</div>
+                <div class="product-bottom">
+                    <div class="product-price">{{ product.price|floatformat:0 }} р.</div>
+                    <button class="order-btn add-to-cart-btn" data-id="{{ product.id }}" onclick="event.stopPropagation(); event.preventDefault();">В корзину</button>
                 </div>
             </div>
-        </div>
+        </a>
         {% empty %}
         <div class="col-12 text-center">
             <p class="lead">Товары не найдены</p>
