@@ -175,3 +175,6 @@ def about(request):
         'cart_items_count': get_cart_items_count(request)
     }
     return render(request, 'about.html', context)
+
+def addresses(request):
+    return render(request, 'addresses.html')

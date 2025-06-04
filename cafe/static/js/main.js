@@ -1,9 +1,7 @@
-// Анимация появления header и меню
 window.addEventListener('DOMContentLoaded', function() {
     var burger = document.querySelector('.burger');
     var nav = document.querySelector('.main-nav');
     var overlay = document.getElementById('menuOverlay');
-    // Гарантируем, что меню закрыто при загрузке
     if (burger) burger.classList.remove('open');
     if (nav) nav.classList.remove('open');
     if (overlay) overlay.classList.remove('active');
@@ -40,15 +38,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Здесь можно добавить другие JS-функции для сайта:
-// - бургер-меню для мобильных
-// - всплывающие сообщения (alert/toast)
-// - модальные окна (например, для заказа)
-// - плавный скролл к якорям
-// - обработка форм (AJAX)
-// - динамическое обновление корзины 
 
-// --- Добавление товара в корзину через AJAX ---
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -117,7 +107,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// --- Модальное окно карточки товара ---
 document.addEventListener('DOMContentLoaded', function() {
     document.body.addEventListener('click', function(e) {
         var link = e.target.closest('.product-link');
@@ -140,7 +129,6 @@ function openProductModal(productId) {
             content.innerHTML = data.html;
             modal.style.display = 'flex';
             setTimeout(function() { modal.classList.add('active'); }, 10);
-            // Повторно инициализируем кнопку "В корзину" внутри модалки
             content.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -170,7 +158,6 @@ function closeProductModal() {
     setTimeout(function() { modal.style.display = 'none'; }, 200);
 }
 
-// --- Модальное окно оформления заказа ---
 document.addEventListener('DOMContentLoaded', function() {
     var orderBtn = document.getElementById('openOrderModal');
     if (orderBtn) {
@@ -184,14 +171,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     content.innerHTML = data.html;
                     modal.style.display = 'flex';
                     setTimeout(function() { modal.classList.add('active'); }, 10);
-                    // Кнопка закрытия
                     var closeBtn = document.getElementById('modalOrderClose');
                     if (closeBtn) {
                         closeBtn.onclick = closeOrderModal;
                     }
-                    // Клик по overlay
                     document.querySelector('.modal-order-overlay').onclick = closeOrderModal;
-                    // Отправка формы заказа
                     var form = document.getElementById('orderForm');
                     if (form) {
                         form.onsubmit = function(ev) {

@@ -27,10 +27,10 @@ pip install -r requirements.txt
 4. Создайте файл .env в корневой директории проекта и добавьте следующие переменные:
 ```
 DEBUG=True
-SECRET_KEY=your-secret-key
+SECRET_KEY=django-insecure-v&!dzxs1na-dxsg%v#l&pu)#gmkw4d)gnmm8m6$6*)cvm0t)0)
 DB_NAME=buttercafe
-DB_USER=your-db-user
-DB_PASSWORD=your-db-password
+DB_USER=postgres
+DB_PASSWORD=postgres
 DB_HOST=localhost
 DB_PORT=5432
 ```
@@ -51,36 +51,3 @@ python manage.py createsuperuser
 ```bash
 python manage.py runserver
 ```
-
-## Структура проекта
-
-```
-buttercafe/
-├── manage.py
-├── requirements.txt
-├── .env
-├── buttercafe/
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-└── cafe/
-    ├── __init__.py
-    ├── admin.py
-    ├── apps.py
-    ├── models.py
-    ├── views.py
-    ├── urls.py
-    ├── forms.py
-    ├── static/
-    │   ├── css/
-    │   ├── js/
-    │   └── images/
-    └── templates/
-        ├── base.html
-        ├── home.html
-        ├── menu.html
-        ├── cart.html
-        └── admin/
-            └── dashboard.html
-``` 
